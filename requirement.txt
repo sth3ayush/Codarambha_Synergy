@@ -1,0 +1,8 @@
+django
+djangorestframework
+channels
+channels-redis
+pillow
+whitenoise
+django-environ
+twilio

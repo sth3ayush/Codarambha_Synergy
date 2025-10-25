@@ -1,0 +1,29 @@
+{% if messages %}
+  <div class="h-messages">
+    {% for message in messages %}
+      <div class="h-message {% if message.tags %}{{ message.tags }}{% endif %}">
+        <span class="h-message-text">{{ message }}</span>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const messages = document.querySelectorAll(".h-message");
+
+    messages.forEach(msg => {
+      // Disappear when clicked
+      msg.addEventListener("click", () => {
+        msg.style.opacity = "0";
+        setTimeout(() => msg.remove(), 500);
+      });
+
+      // Auto disappear after 5 seconds
+      setTimeout(() => {
+        msg.style.opacity = "0";
+        setTimeout(() => msg.remove(), 500);
+      }, 5000);
+    });
+  });
+</script>

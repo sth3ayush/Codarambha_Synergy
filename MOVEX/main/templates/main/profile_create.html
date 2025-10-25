@@ -1,0 +1,136 @@
+{% extends 'main.html' %} {% load static %} 
+
+{% block title %}Profile Form:MOVEX{% endblock %}
+
+{% block content %}
+
+<div class="center-container">
+    <div class="form-card">
+        <strong class="fs-3 mb-1">Create a Profile</strong>
+        <hr>
+        <form method="post" action="{% url 'profile-create' %}">
+            {% csrf_token %}
+
+            <div class="mb-2">
+                <input type="text" name="f_name" class="form-control" placeholder="First_name" required />
+                <input type="text" name="l_name" class="form-control" placeholder="Last Name" required />
+            </div>
+            <small>Enter your correct name included in you government ID.</small>
+
+            <input type="tel" name="phone" class="form-control mb-1" placeholder="Phone Number" id="phone"
+                maxlength="15" pattern="[0-9]{1,15}" required />
+            <small>OTP will be sent to this number. Make sure to enter correctly.</small>
+
+            <button type="button" class="btn btn-register" id="sendOtpBtn">
+                SEND OTP
+            </button>
+        </form>
+    </div>
+
+    <!-- OTP Modal -->
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enter OTP</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form class="modal-body text-center" action="{% url 'profile-create' %}" method="post" id="otpForm">
+                    {% csrf_token %}
+                    <!-- hidden values for profile -->
+                    <input type="hidden" name="f_name" id="modal_f_name" />
+                    <input type="hidden" name="l_name" id="modal_l_name" />
+                    <input type="hidden" name="phone" id="modal_phone" />
+
+                    <input type="text" name="otp" class="form-control mb-3" placeholder="Enter OTP" required />
+                    <button type="submit" class="btn btn-register w-100">SUBMIT</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === name + "=") {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie("csrftoken");
+
+    $("#sendOtpBtn").click(function () {
+        const f_name = $("input[name='f_name']").val();
+        const l_name = $("input[name='l_name']").val();
+        const phone = $("#phone").val();
+
+        if (!f_name || !l_name || !phone) {
+            alert("Please fill all fields first!");
+            return;
+        }
+
+        const btn = $(this);
+        btn.prop("disabled", true).text("Checking...");
+
+        // 1. First check if phone is already used
+        $.ajax({
+            url: "{% url 'check-phone-exists' %}",   // you’ll need a new view for phone check
+            type: "POST",
+            data: { phone: phone },
+            headers: { "X-CSRFToken": csrftoken },
+            success: function (response) {
+                if (response.exists) {
+                    alert("This phone number is already in use!");
+                    btn.prop("disabled", false).text("SEND OTP");
+                    return;
+                }
+
+                // 2. Send OTP if not taken
+                $.ajax({
+                    url: "{% url 'phone-otp' %}",
+                    type: "POST",
+                    data: { phone: phone },
+                    headers: { "X-CSRFToken": csrftoken },
+                    success: function (response) {
+                        if (response.status === "success") {
+                            // Copy values into modal hidden fields
+                            $("#modal_f_name").val(f_name);
+                            $("#modal_l_name").val(l_name);
+                            $("#modal_phone").val(phone);
+
+                            // Show OTP modal
+                            const otpModal = new bootstrap.Modal(
+                                document.getElementById("otpModal")
+                            );
+                            otpModal.show();
+
+                            btn.text("OTP Sent ✅"); // update button text
+                        } else {
+                            alert(response.message || "Could not send OTP.");
+                            btn.prop("disabled", false).text("SEND OTP");
+                        }
+                    },
+                    error: function () {
+                        alert("Something went wrong while sending OTP.");
+                        btn.prop("disabled", false).text("SEND OTP");
+                    },
+                });
+            },
+            error: function () {
+                alert("Error checking phone existence.");
+                btn.prop("disabled", false).text("SEND OTP");
+            },
+        });
+    });
+</script>
+
+{% endblock %}

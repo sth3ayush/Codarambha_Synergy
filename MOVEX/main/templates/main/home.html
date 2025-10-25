@@ -1,0 +1,234 @@
+{% extends 'main.html' %} {% load static %} {% block content %}
+
+<div class="row">
+
+    <div class="d-lg-none text-center mb-3">
+        <button class="btn btn-light border rounded-pill px-4 py-2" data-bs-toggle="offcanvas"
+            data-bs-target="#mapOffcanvas">
+            Map
+        </button>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4 d-none d-lg-block" id="filterSidebar">
+        <div class="p-3 border rounded Sidebar" id="map">
+            <!-- Location info box -->
+            <div id="locationInfo" class="location-box" style="display:none;">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Close"
+                    onclick="closeLocationBox('locationInfo')"></button>
+                <strong>Your location</strong>
+                <p id="country"></p>
+                <p id="province"></p>
+                <p id="city"></p>
+                <p id="postal"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offcanvas for Mobile -->
+    <div class="offcanvas offcanvas-bottom h-100" tabindex="-1" id="mapOffcanvas">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Your Location</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="p-3 border rounded Sidebar h-100" id="mapMobile">
+                <!-- Location info box -->
+                <div id="locationInfoMobile" class="location-box" style="display:none;">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Close"
+                        onclick="closeLocationBox('locationInfoMobile')"></button>
+                    <strong>Your location</strong>
+                    <p id="countryMobile"></p>
+                    <p id="provinceMobile"></p>
+                    <p id="cityMobile"></p>
+                    <p id="postalMobile"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parking Cards -->
+    <div class="col-md-8 parking-container">
+        <h5>Parking Spots Near Me</h5>
+
+        <!-- Accordion wrapper -->
+        <div id="parkingAccordion">
+            <!-- Hope Hospital - Card 1 -->
+            <div class="card p-3 mb-3 parking-card" style="background-color: #f0f0f0; border: none;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <i class="bi bi-chevron-down toggle-icon me-3" data-bs-toggle="collapse"
+                        data-bs-target="#hopeHospital1"></i>
+                    <div class="flex-grow-1 details">
+                        <strong class="fs-5">Hope Hospital Parking</strong>
+                        <span class="text-muted small">0.51 km away</span>
+                        <span class="text-muted small">Available: 24/7</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-primary fs-7"><i class="fa-solid fa-shield-halved"></i>Secured</span>
+                        <span class="badge bg-success fs-7"><i class="fa-solid fa-circle-check"></i>Verified</span>
+                    </div>
+                </div>
+                <div class="collapse mt-2" id="hopeHospital1" data-bs-parent="#parkingAccordion">
+                    <p><i class="fa-solid fa-motorcycle fs-3"></i> Available: 3/9 two-wheeler slots</p>
+                    <p><i class="bi bi-car-front fs-3"></i> Available: 1/4 four-wheeler slots</p>
+                    <p><i class="fa-solid fa-truck fs-3"></i> Available: 2/2 lorries slots</p>
+                    <button class="book-btn btn mt-2">BOOK NOW</button>
+                </div>
+            </div>
+
+            <!-- Hope Hospital - Card 2 -->
+            <div class="card p-3 mb-3 parking-card" style="background-color: #f0f0f0; border: none;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <i class="bi bi-chevron-down toggle-icon me-3" data-bs-toggle="collapse"
+                        data-bs-target="#hopeHospital2"></i>
+                    <div class="flex-grow-1 details">
+                        <strong class="fs-5">Hope Hospital Parking</strong>
+                        <span class="text-muted small">0.51 km away</span>
+                        <span class="text-muted small">Available: 24/7</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-primary fs-7"><i class="fa-solid fa-shield-halved"></i>Secured</span>
+                        <span class="badge bg-success fs-7"><i class="fa-solid fa-circle-check"></i>Verified</span>
+                    </div>
+                </div>
+                <div class="collapse mt-2" id="hopeHospital2" data-bs-parent="#parkingAccordion">
+                    <p><i class="fa-solid fa-motorcycle fs-3"></i> Available: 3/9 two-wheeler slots</p>
+                    <p><i class="bi bi-car-front fs-3"></i> Available: 1/4 four-wheeler slots</p>
+                    <p><i class="fa-solid fa-truck fs-3"></i> Available: 2/2 lorries slots</p>
+                    <button class="book-btn btn mt-2">BOOK NOW</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // ---- Helper functions ----
+        async function updateAddress(lat, lng, els, infoBox) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+                const data = await res.json();
+
+                els.country.innerText = "Country: " + (data.address.country || "N/A");
+                els.province.innerText = "Province/State: " + (data.address.state || "N/A");
+                els.city.innerText = "City/Town: " + (data.address.city || data.address.town || data.address.village || "N/A");
+                els.postal.innerText = "Postal Code: " + (data.address.postcode || "N/A");
+
+                infoBox.style.display = "block";
+            } catch (err) {
+                console.error("Reverse geocoding error:", err);
+            }
+        }
+
+        function addMarker(mapInstance, lat, lng, els, infoBox) {
+            let marker = L.marker([lat, lng], { draggable: true }).addTo(mapInstance);
+            marker.bindPopup("This is your location. Drag to correct if needed.").openPopup();
+
+            updateAddress(lat, lng, els, infoBox);
+
+            marker.on("dragend", function (e) {
+                const pos = e.target.getLatLng();
+                updateAddress(pos.lat, pos.lng, els, infoBox);
+                marker.getPopup().setContent("Location updated! Drag if still incorrect.").openOn(mapInstance);
+            });
+
+            return marker;
+        }
+
+        // ---- Desktop Map ----
+        const map = L.map("map").setView([27.7172, 85.3240], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
+
+        const desktopEls = {
+            country: document.getElementById("country"),
+            province: document.getElementById("province"),
+            city: document.getElementById("city"),
+            postal: document.getElementById("postal"),
+        };
+        const desktopInfo = document.getElementById("locationInfo");
+
+        // ---- Mobile Map ----
+        const mapMobile = L.map("mapMobile").setView([27.7172, 85.3240], 13);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(mapMobile);
+
+        const mobileEls = {
+            country: document.getElementById("countryMobile"),
+            province: document.getElementById("provinceMobile"),
+            city: document.getElementById("cityMobile"),
+            postal: document.getElementById("postalMobile"),
+        };
+        const mobileInfo = document.getElementById("locationInfoMobile");
+
+        // Keep marker references
+        let desktopMarker, mobileMarker;
+
+        // ---- Geolocation once, update both maps ----
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(
+                function (pos) {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+
+                    // Desktop
+                    if (!desktopMarker) {
+                        map.setView([lat, lng], 15);
+                        desktopMarker = addMarker(map, lat, lng, desktopEls, desktopInfo);
+                    }
+
+                    // Mobile (only if map is visible)
+                    if (document.getElementById("mapOffcanvas").classList.contains("show")) {
+                        if (!mobileMarker) {
+                            mapMobile.setView([lat, lng], 15);
+                            mobileMarker = addMarker(mapMobile, lat, lng, mobileEls, mobileInfo);
+                        }
+                    }
+                },
+                function (err) {
+                    console.warn("Geolocation failed:", err.message);
+                },
+                { enableHighAccuracy: true }
+            );
+        } else {
+            console.warn("Geolocation not supported");
+        }
+
+        // ---- Mobile offcanvas open ----
+        const offcanvasEl = document.getElementById("mapOffcanvas");
+        offcanvasEl.addEventListener("shown.bs.offcanvas", function () {
+            mapMobile.invalidateSize();
+            if (desktopMarker) {
+                const pos = desktopMarker.getLatLng();
+                if (!mobileMarker) {
+                    mapMobile.setView(pos, 15);
+                    mobileMarker = addMarker(mapMobile, pos.lat, pos.lng, mobileEls, mobileInfo);
+                }
+            }
+        });
+
+    });
+
+
+
+    document.querySelectorAll('.toggle-icon').forEach(function (icon) {
+        let target = document.querySelector(icon.getAttribute("data-bs-target"));
+
+        target.addEventListener("show.bs.collapse", function () {
+            icon.classList.add("rotate");
+        });
+
+        target.addEventListener("hide.bs.collapse", function () {
+            icon.classList.remove("rotate");
+        });
+    });
+
+    function closeLocationBox(id) {
+    document.getElementById(id).style.display = "none";
+}
+
+</script>
+
+{% endblock %}

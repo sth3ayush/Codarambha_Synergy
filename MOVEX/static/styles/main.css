@@ -1,0 +1,26 @@
+body {
+  padding-top: 70px; /* keeps content below top navbar */
+  padding-bottom: 70px; /* keeps content above bottom navbar */
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+  color: #262626;
+}
+
+a:hover {
+  color: #F4D117;
+}
+
+.center-container {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form input,
+.btn {
+  font-family: "Orbitron", sans-serif;
+}

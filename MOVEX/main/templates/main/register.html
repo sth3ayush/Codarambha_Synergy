@@ -1,0 +1,141 @@
+{% extends 'main.html' %} {% load static %}
+
+{% block title %}Sign Up:MOVEX{% endblock %}
+
+{% block content %}
+
+<div class="center-container">
+    <div class="form-card">
+        <strong class="fs-3 mb-1">Sign Up</strong><hr>
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            <input type="email" name="email" class="form-control mb-1" placeholder="Email" id="email" required />
+            <small>Make sure you enter correct email</small>
+
+            <div class="mb-2">
+                <input type="password" name="password1" class="form-control" placeholder="Password" required />
+                <input type="password" name="password2" class="form-control" placeholder="Confirm Password" required />
+            </div>
+            <small>You will receive an OTP in this email.</small>
+
+            <button type="button" class="btn btn-register" id="sendOtpBtn">
+                SEND OTP
+            </button>
+        </form>
+
+        <p class="mt-3 text-center">
+            Already have an account? <a href="{% url 'login' %}">LogIn</a>
+        </p>
+    </div>
+
+    <!-- OTP Modal -->
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enter OTP</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form class="modal-body text-center" action="{% url 'register' %}" method="post" id="otpForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="email" id="modal_email" />
+                    <input type="hidden" name="password1" id="modal_password1" />
+                    <input type="hidden" name="password2" id="modal_password2" />
+
+                    <input type="text" name="otp" class="form-control mb-3" placeholder="Enter OTP" required />
+                    <button type="submit" class="btn btn-register w-100">REGISTER</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === name + "=") {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie("csrftoken");
+
+    $("#sendOtpBtn").click(function () {
+        const email = $("#email").val();
+        const password1 = $("input[name='password1']").val();
+        const password2 = $("input[name='password2']").val();
+
+        if (!email || !password1 || !password2) {
+            alert("Please fill all fields first!");
+            return;
+        }
+
+        if (password1 !== password2) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        const btn = $(this);
+        btn.prop("disabled", true).text("Checking...");
+
+        // First check if user already exists
+        $.ajax({
+            url: "{% url 'check-user-exists' %}",   // 👉 create a small Django view for this
+            type: "POST",
+            data: { email: email },
+            headers: { "X-CSRFToken": csrftoken },
+            success: function (response) {
+                if (response.exists) {
+                    alert("User with this email already exists!");
+                    btn.prop("disabled", false).text("SEND OTP");
+                    return;
+                }
+
+                // If user does not exist, then send OTP
+                $.ajax({
+                    url: "{% url 'send-otp' %}",
+                    type: "POST",
+                    data: { email: email },
+                    headers: { "X-CSRFToken": csrftoken },
+                    success: function (response) {
+                        if (response.status === "success") {
+                            // Copy main form values to modal hidden fields
+                            $("#modal_email").val(email);
+                            $("#modal_password1").val(password1);
+                            $("#modal_password2").val(password2);
+
+                            // Show OTP modal
+                            const otpModal = new bootstrap.Modal(
+                                document.getElementById("otpModal")
+                            );
+                            otpModal.show();
+
+                            btn.text("OTP Sent ✅");
+                        } else {
+                            alert(response.message || "Could not send OTP.");
+                            btn.prop("disabled", false).text("SEND OTP");
+                        }
+                    },
+                    error: function () {
+                        alert("Something went wrong while sending OTP.");
+                        btn.prop("disabled", false).text("SEND OTP");
+                    },
+                });
+            },
+            error: function () {
+                alert("Error checking user existence.");
+                btn.prop("disabled", false).text("SEND OTP");
+            },
+        });
+    });
+</script>
+
+{% endblock %}

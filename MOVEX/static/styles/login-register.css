@@ -1,0 +1,54 @@
+.form-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 600px;
+    width: 100%;
+}
+
+.form-card input {
+    border-radius: 0;
+    padding: 12px;
+    border: 1px solid #ccc;
+}
+
+.form-card input:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.form-card input:last-child {
+    border-top: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.form-card small {
+    display: block;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+.btn-register {
+    background: #111;
+    color: #F4D117;
+    font-weight: bold;
+    font-size: 18px;
+    border-radius: 8px;
+    width: 100%;
+    padding: 12px;
+    transition: 0.3s;
+}
+
+.btn-register:hover {
+    background: #333;
+}
+
+.form-card a {
+    color: #111;
+    text-decoration: none;
+}
+
+.form-card a:hover {
+    text-decoration: underline;
+}

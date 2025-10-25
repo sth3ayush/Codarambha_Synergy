@@ -1,0 +1,83 @@
+{% extends 'main.html' %} {% load static %} 
+
+{% block title %}Host Profile Form:MOVEX{% endblock %}
+
+{% block content %}
+
+<div class="center-container">
+    <div class="form-card">
+        <strong class="fs-3 mb-1">Host Profile</strong>
+        <hr>
+        <form action="{% url 'host-profile-create' %}" id="idUploadForm" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="govId" class="form-label">Government ID</label>
+                <div 
+                    id="uploadArea" 
+                    class="form-control mb-1" 
+                    style="height: 120px; display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; border: 2px dashed #ccc; border-radius: 8px;"
+                >
+                    <span>Drag and Drop your government ID here<br>OR<br>Browse File</span>
+                    <input 
+                        type="file" 
+                        accept="image/*" 
+                        id="govId" 
+                        style="display: none;" 
+                        capture="environment"
+                        name="gov_id_image"
+                    />
+                </div>
+                <small>Only one image allowed.</small>
+            </div>
+
+            <!-- Preview box -->
+            <div id="previewContainer" style="margin-top: 10px; display: none;">
+                <strong>Preview:</strong>
+                <div style="margin-top: 5px;">
+                    <img id="previewImage" src="" alt="ID Preview" style="width: 120px; height: auto; border: 1px solid #ccc; border-radius: 4px;" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-register mt-3">Upload</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('govId');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Drag & Drop
+    uploadArea.addEventListener('dragover', e => e.preventDefault());
+    uploadArea.addEventListener('drop', e => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            fileInput.files = e.dataTransfer.files; 
+            const reader = new FileReader();
+            reader.onload = e => {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+{% endblock %}

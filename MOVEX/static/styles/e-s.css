@@ -1,0 +1,42 @@
+.h-messages {
+  position: fixed;
+  top: 60px;        /* Just below navbar */
+  left: 10px;       /* 10px gap from left */
+  z-index: 9999;
+  width: auto;
+  max-width: 320px; /* Prevent too wide messages */
+}
+
+.h-message {
+  padding: 12px 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  cursor: pointer;
+  color: #262626;
+}
+
+/* Success */
+.h-message.success {
+  background: #e5ffe5;
+}
+
+/* Error */
+.h-message.error {
+  background: #ffe5e5;
+}
+
+/* Warning */
+.h-message.warning {
+  background: #ffffe5;
+}
+
+/* Info */
+.h-message.info {
+  background: #d3d3d3;
+}

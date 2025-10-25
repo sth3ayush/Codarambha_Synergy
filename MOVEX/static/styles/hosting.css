@@ -1,0 +1,37 @@
+.empty-state {
+  max-width: 450px;
+  background: #fff;
+  padding: 30px;
+}
+
+.empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  background: #fdf7d9;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.empty-icon i {
+  font-size: 3.5rem;
+  color: #F4D117;
+}
+
+/* 🔹 Responsive tweaks */
+@media (max-width: 767px) {
+  .empty-state {
+    max-width: 90%;
+    padding: 25px;
+  }
+
+  .empty-state h4 {
+    font-size: 1.25rem;
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
+  }
+}

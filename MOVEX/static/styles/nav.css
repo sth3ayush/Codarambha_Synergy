@@ -1,0 +1,261 @@
+.profile-circle {
+    width: 35px;
+    height: 35px;
+    background: black;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Menu Icon */
+.menu-icon {
+    width: 35px;
+    height: 35px;
+    background: #f2f2f2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Book Button */
+.book-btn {
+    width: 100%;
+    background: black;
+    color: #F4D117;
+    font-weight: bold;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+}
+
+.book-btn:hover {
+    background: #333;
+}
+
+/* Toggle Icon */
+.toggle-icon {
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: black;
+    transition: transform 0.3s ease;
+}
+
+.toggle-icon.rotate {
+    transform: rotate(180deg);
+}
+
+
+/* Desktop Navbar Links */
+.navbar-nav .nav-link {
+    color: black !important;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-nav .nav-link i {
+    font-size: 1.2rem;
+    color: black;
+}
+
+.navbar-nav .nav-link.active {
+    color: #F4D117 !important;
+    /* yellow active */
+}
+
+.dropdown-card {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    width: 280px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+    display: none;
+    flex-direction: column;
+    padding: 10px 0;
+    z-index: 1000;
+}
+
+.dropdown-card.active {
+    display: flex;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    font-size: 15px;
+    text-decoration: none;
+    color: #222;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background: #f5f5f5;
+}
+
+.dropdown-item i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.dropdown-separator {
+    height: 1px;
+    background: #ddd;
+    margin: 8px 0;
+}
+
+.nav-hover {
+    width: 100px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    transition: background-color 0.2s ease-in-out;
+    color: inherit;
+    text-decoration: none;
+}
+
+.nav-hover:hover {
+    background-color: #f2f2f2;
+}
+
+.nav-hover.active {
+    position: relative;
+    border: none;       
+    background-color: #fff9db;
+    color: #F4D117;
+}
+
+.nav-hover.active {
+    position: relative;
+    border: none;
+    background: linear-gradient(to top, #fff9db 0%, #fff 100%);
+    color: #F4D117;
+}
+
+.nav-hover.active i {
+    color: #F4D117;
+}
+
+/* Only bottom border */
+.nav-hover.active::before {
+    content: "";
+    display: none; /* hide top border */
+}
+
+.nav-hover.active::after {
+    content: "";
+    position: absolute;
+    bottom: 0;            
+    left: -5px;               /* extend slightly beyond box */
+    width: calc(100% + 10px);
+    height: 4px;          
+    background-color: #F4D117;
+    border-radius: 2px;       /* optional rounded edge */
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .nav-hover.active::before,
+    .nav-hover.active::after {
+        left: -2px;               
+        width: calc(100% + 4px);  
+        height: 3px;               
+    }
+
+    .nav-hover {
+        width: 80px;               
+        height: 40px;
+    }
+}
+
+@media (min-width: 769px) {
+    .navbar-nav.d-flex {
+        gap: 10px;
+    }
+}
+
+/* Profile Card Styling */
+.profile-card {
+    position: absolute;
+    top: 70px; /* adjust based on navbar */
+    right: 20px;
+    width: 250px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    padding: 20px;
+    display: none; /* hidden by default */
+    z-index: 1000;
+    font-family: 'Poppins', sans-serif;
+}
+
+.profile-card p {
+    margin: 4px 0;
+    font-size: 14px;
+    word-wrap: break-word;   /* for older browsers */
+    overflow-wrap: break-word; /* modern way */
+    white-space: normal; /* ensures wrapping */
+}
+
+.profile-card h4 {
+    font-size: 18px;
+    margin: 6px 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.profile-circle-big {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #222;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    margin: 0 auto 10px;
+}
+
+/* Account Setting Button */
+.account-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px;
+    background: #f4f4f4;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+/* Hover Animation for Gear */
+.account-btn i {
+    transition: transform 0.6s ease, margin-left 0.6s ease;
+}
+
+.account-btn:hover i {
+    transform: rotate(180deg);
+    color: #262626;
+}
+
+.account-btn:hover {
+    color: #262626;
+}
